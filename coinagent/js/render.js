@@ -9,7 +9,7 @@ var renderChart = function () {
     };
 
     var depthTrace = {
-        name: 'depth',
+        name: 'volume diff',
         type: 'scatter',
         x: [Date.now()],
         y: [price],
@@ -19,7 +19,7 @@ var renderChart = function () {
     var data = [priceTrace, depthTrace];
 
     var layout = {
-        title: 'Ask and Bids',
+        title: 'Volume diff (' + diff + ') and price (' + price + ') for ' + symbol.toUpperCase(),
         xaxis: {
             title: 'time',
         },
@@ -48,6 +48,7 @@ var updateChart = function () {
     }, [1]);
 
     Plotly.relayout('chart', {
+        title: 'Volume diff (' + diff + ') and price (' + price + ') for ' + symbol.toUpperCase(),
         xaxis: {
             range: [
                 new Date(Date.now() - 60 * 1000),
