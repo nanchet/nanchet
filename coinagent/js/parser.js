@@ -53,13 +53,9 @@ var parseDepth = function (data) {
         }, {});
 
     diff = Object.entries(askr)[0][1] - Object.entries(bidr)[0][1];
-
-    updateChart();
 }
 
 var parsePrice = function (data) {
     priceTime = new Date(data.E);
     price = parseFloat(data.c);
-
-    updateChart();
 }
