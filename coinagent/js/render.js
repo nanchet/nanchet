@@ -29,7 +29,11 @@ var renderChart = function () {
         yaxis2: {
             title: 'depth',
             overlaying: 'y',
-            side: 'right'
+            side: 'right',
+            range: [
+                -300,
+                300
+            ]
         }
     };
 
@@ -57,8 +61,8 @@ var updateChart = function () {
         },
         yaxis: {
             range: [
-                price - priceMargen,
-                price + priceMargen
+                Math.floor((price - 1) / 10) * 10,
+                Math.ceil((price + 1) / 10) * 10
             ]
         }
     });

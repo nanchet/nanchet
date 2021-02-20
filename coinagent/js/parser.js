@@ -1,4 +1,6 @@
 var price = 108;
+var priceUp;
+var priceDown;
 
 var ask = {};
 var bid = {};
@@ -6,7 +8,8 @@ var askr = {};
 var bidr = {};
 var diff = 0;
 
-var precision = 1;
+var percent = 1;
+var precision = 2;
 
 var depthTime = new Date();
 var priceTime = new Date();
@@ -22,16 +25,14 @@ var parseDepth = function (data) {
         .sort(function (a, b) {
             return parseFloat(a[0]) - parseFloat(b[0]);
         })
-        .reduce(function (carry, item,) {
-            if (parseFloat(item[0]) > price) {
-                var [i, f] = item[0].split('.');
-                var v = i + '.' + f.substring(0, precision);
-
-                carry[v] = (carry[v] ?? 0) + parseFloat(item[1]);
-            }
-
-            return carry;
-        }, {});
+        .filter(function (item) {
+            return (parseFloat(item[1]) !== 0
+                && parseFloat(item[0]) > price
+                && parseFloat(item[0]) < priceUp);
+        })
+        .reduce(function (carry, item) {
+            return carry + parseFloat(item[1]);
+        }, 0);
 
     data.b.forEach(item => {
         bid[item[0]] = parseFloat(item[1]);
@@ -41,21 +42,22 @@ var parseDepth = function (data) {
         .sort(function (a, b) {
             return parseFloat(b[0]) - parseFloat(a[0]);
         })
+        .filter(function (item) {
+            return (parseFloat(item[1]) !== 0
+                && parseFloat(item[0]) < price
+                && parseFloat(item[0]) > priceDown);
+        })
         .reduce(function (carry, item) {
-            if (parseFloat(item[0]) < price) {
-                var [i, f] = item[0].split('.');
-                var v = i + '.' + f.substring(0, precision);
+            return carry + parseFloat(item[1]);
+        }, 0);
 
-                carry[v] = (carry[v] ?? 0) + parseFloat(item[1]);
-            }
-
-            return carry;
-        }, {});
-
-    diff = Object.entries(askr)[0][1] - Object.entries(bidr)[0][1];
+    diff = askr - bidr;
 }
 
 var parsePrice = function (data) {
     priceTime = new Date(data.E);
     price = parseFloat(data.c);
+
+    priceUp = price * ((percent / 100) + 1);
+    priceDown = price / ((percent / 100) + 1);
 }
